@@ -2,80 +2,72 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🧴 Aseo Personal</title>
+  <title>🧼 Aseo Personal</title>
 
-  <!-- 🔹 Estilos -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="productos.css">
-
-  <!-- 🔹 Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- 🔹 Contenedor del Navbar -->
   <div id="navbar-container"></div>
 
-  <!-- 🔹 Contenido principal -->
   <main>
-    <header class="titulo-lacteos">
-      <h1>🧴 Productos de Aseo Personal</h1>
-    </header>
-
+    <button class="btn-volver" onclick="window.location.href='super.html'">
+      ⬅️ Volver al inicio
+    </button>
+    <header><h1>🧼 Aseo Personal</h1></header>
     <section class="productos-container" id="productos-container"></section>
   </main>
 
-  <!-- 🔹 Script Navbar -->
   <script src="navbar.js"></script>
 
   <script>
-    // ✅ Cargar el navbar externo
+    let productos = [];
+
     fetch("navbar.html")
       .then(r => r.text())
       .then(h => {
         document.getElementById("navbar-container").innerHTML = h;
-        inicializarNavbar(); 
-      })
-      .catch(err => console.error("Error cargando navbar:", err));
+        inicializarNavbar();
+        inicializarBusqueda();
+      });
 
-    // ✅ Cargar productos
     async function cargarProductos() {
-      try {
-        const r = await fetch('/productos/aseo_personal');
-        const productos = await r.json();
-        const cont = document.getElementById('productos-container');
-
-        cont.innerHTML = productos.map(p => `
-          <div class="producto-card">
-            <img src="${p.image_url}" alt="${p.name}" class="producto-img">
-            <div class="producto-info">
-              <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
-              <h3>${p.name}</h3>
-              <button class="btn-agregar"
-                data-nombre="${p.name}"
-                data-precio="${p.price}"
-                data-imagen="${p.image_url}">
-                Agregar 🛒
-              </button>
-            </div>
-          </div>
-        `).join('');
-
-        document.querySelectorAll('.btn-agregar').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const producto = {
-              name: btn.dataset.nombre,
-              price: parseFloat(btn.dataset.precio),
-              image_url: btn.dataset.imagen
-            };
-            agregarAlCarrito(producto);
-          });
-        });
-      } catch (err) {
-        console.error('Error cargando productos:', err);
-      }
+      const res = await fetch('/productos/aseo_personal');
+      productos = await res.json();
+      mostrarProductos(productos);
     }
 
-    // ✅ Agregar al carrito
+    function mostrarProductos(lista) {
+      const cont = document.getElementById('productos-container');
+      if (!lista.length) {
+        cont.innerHTML = `<p class="no-resultados">No se encontraron productos.</p>`;
+        return;
+      }
+      cont.innerHTML = lista.map(p => `
+        <div class="producto-card">
+          <img src="${p.image_url}" alt="${p.name}" class="producto-img">
+          <div class="producto-info">
+            <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
+            <h3>${p.name}</h3>
+            <button class="btn-agregar" data-nombre="${p.name}" data-precio="${p.price}" data-imagen="${p.image_url}">
+              Agregar 🛒
+            </button>
+          </div>
+        </div>`).join('');
+
+      document.querySelectorAll('.btn-agregar').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const producto = {
+            name: btn.dataset.nombre,
+            price: parseFloat(btn.dataset.precio),
+            image_url: btn.dataset.imagen
+          };
+          agregarAlCarrito(producto);
+        });
+      });
+    }
+
     function agregarAlCarrito(producto) {
       const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
       carrito.push(producto);
@@ -85,6 +77,11 @@
       if (contador) contador.textContent = carrito.length > 0 ? carrito.length : '';
 
       alert(`${producto.name} agregado al carrito 🛒`);
+    }
+
+    function filtrarProductosPorBusqueda(texto) {
+      if (!texto) mostrarProductos(productos);
+      else mostrarProductos(productos.filter(p => p.name.toLowerCase().includes(texto)));
     }
 
     cargarProductos();

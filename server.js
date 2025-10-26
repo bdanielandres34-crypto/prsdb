@@ -133,7 +133,6 @@ app.get('/products', (req, res) => {
     res.json(results);
   });
 });
-
 // Obtener productos por categoría
 app.get('/productos/:categoria', (req, res) => {
   const { categoria } = req.params;
