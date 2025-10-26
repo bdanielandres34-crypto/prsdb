@@ -122,3 +122,16 @@ body {
     margin: 10px 0;
   }
 }
+/* --- Enlace dentro de la cuenta --- */
+.navbar-account a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-account a:hover {
+  color: white; /* mantiene el color al pasar el mouse */
+}

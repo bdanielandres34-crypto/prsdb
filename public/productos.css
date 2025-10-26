@@ -6,13 +6,12 @@ body {
   margin: 0;
   padding: 0; /* ✅ antes tenía 20px */
 }
-
-/* Espaciado visual del contenido debajo del navbar */
-header {
+.titulo-lacteos {
   text-align: center;
-  margin-top: 20px; /* ✅ agrega espacio solo debajo del navbar */
+  margin-top: 20px;
   margin-bottom: 30px;
 }
+
 
 .productos-container {
   display: grid;

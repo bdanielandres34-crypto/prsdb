@@ -1,20 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Aseo Hogar</title>
-  <link rel="stylesheet" href="super.css" />
+  <meta charset="UTF-8">
+  <title>🧴 Aseo Personal</title>
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="productos.css">
 </head>
 <body>
+  <div id="navbar-container"></div>
+  <main>
+    <header><h1>🧴 Aseo Personal</h1></header>
+    <section class="productos-container" id="productos-container"></section>
+  </main>
 
-  <header class="header-category">
-    <h1>Aseo Personal</h1>
-    <a href="super.html" class="back-btn">⬅ Volver al inicio</a>
-  </header>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    fetch("navbar.html").then(r=>r.text()).then(h=>{document.getElementById("navbar-container").innerHTML=h;inicializarNavbar();});
 
-  <section class="content-section">
-    <p>Aquí puedes agregar productos de limpieza para el hogar como detergentes, desinfectantes, aromatizantes, etc.</p>
-  </section>
+    async function inicializarNavbar(){
+      const r=await fetch('/getUser');const u=await r.json();
+      const a=document.getElementById('navbar-account');const t=document.getElementById('account-text');
+      if(!u.username){t.innerHTML=`<span>¡Hola! Inicia sesión</span><br><strong>Mi cuenta</strong>`;a.onclick=()=>location.href='/index.html';}
+      else{t.innerHTML=`<span>Bienvenido</span><br><strong>${u.username}</strong>`;a.onclick=async()=>{if(confirm("¿Deseas cerrar sesión?")){await fetch('/logout');location.href='/index.html';}};}
+    }
 
+    async function cargarProductos(){
+      const r=await fetch('/productos/aseo_personal');const p=await r.json();
+      document.getElementById('productos-container').innerHTML=p.map(x=>`
+      <div class="producto-card">
+        <img src="${x.image_url}" alt="${x.name}" class="producto-img">
+        <div class="producto-info">
+          <p class="precio">$${parseFloat(x.price).toLocaleString()}</p>
+          <h3>${x.name}</h3>
+          <button class="btn-agregar">Agregar 🛒</button>
+        </div>
+      </div>`).join('');
+    }cargarProductos();
+  </script>
 </body>
 </html>

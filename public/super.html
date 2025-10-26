@@ -18,11 +18,11 @@
       <button><i class="fas fa-search"></i></button>
     </div>
 
-    <div class="navbar-account">
+    <div class="navbar-account" id="navbar-account">
       <div class="account-icon">
         <i class="fas fa-user"></i>
       </div>
-      <div class="account-text">
+      <div class="account-text" id="account-text">
         <span>¡Hola! Inicia sesión</span><br>
         <strong>Mi cuenta</strong>
       </div>
@@ -34,25 +34,23 @@
     </div>
   </header>
 
+  <!-- 🛒 SECCIÓN PRINCIPAL -->
   <section class="categories-section">
     <h2>QUE QUIERES COMPRAR HOY</h2>
 
     <div class="categories-container">
-
-
       <a href="lacteos.html" class="category-card">
         <img src="img/lacteos.png" alt="Lácteos">
         <p>Lácteos</p>
       </a>
 
       <a href="despensa.html" class="category-card">
-        <img src="img/despensa.png" alt="Bebidas">
+        <img src="img/despensa.png" alt="Despensa">
         <p>Despensa</p>
       </a>
 
       <a href="aseo_personal.html" class="category-card">
-        <img src="img/aseo personal.png" alt="Congelados">
-
+        <img src="img/aseo personal.png" alt="Aseo Personal">
         <p>Aseo Personal</p>
       </a>
 
@@ -65,9 +63,47 @@
         <img src="img/carnes frias.png" alt="Carnes Frías">
         <p>Carnes Frías</p>
       </a>
-
     </div>
   </section>
 
+  <!-- 🧩 Scripts -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    // ✅ Detectar sesión activa y actualizar navbar
+    async function cargarUsuario() {
+      try {
+        const res = await fetch('/getUser');
+        const user = await res.json();
+
+        const account = document.getElementById('navbar-account');
+        const text = document.getElementById('account-text');
+
+        if (!user.username) {
+          // 🔸 Usuario no logueado
+          text.innerHTML = `
+            <span>¡Hola! Inicia sesión</span><br>
+            <strong>Mi cuenta</strong>
+          `;
+          account.onclick = () => window.location.href = '/index.html';
+        } else {
+          // 🔹 Usuario logueado
+          text.innerHTML = `
+            <span>Bienvenido</span><br>
+            <strong>${user.username}</strong>
+          `;
+          account.onclick = async () => {
+            if (confirm('¿Deseas cerrar sesión?')) {
+              await fetch('/logout');
+              window.location.href = '/index.html';
+            }
+          };
+        }
+      } catch (error) {
+        console.error('Error verificando sesión:', error);
+      }
+    }
+
+    cargarUsuario();
+  </script>
 </body>
 </html>
