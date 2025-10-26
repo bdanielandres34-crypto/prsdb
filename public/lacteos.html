@@ -3,69 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <title>🧀 Lácteos</title>
+
+  <!-- 🔹 Estilos -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="productos.css">
+
+  <!-- 🔹 Iconos (versión actualizada de Font Awesome 6) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <!-- 🔹 Contenedor del Navbar -->
   <div id="navbar-container"></div>
 
   <main>
     <header class="titulo-lacteos">
       <h1>🧀 Productos Lácteos</h1>
     </header>
+
     <section class="productos-container" id="productos-container"></section>
   </main>
 
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- 🔹 Scripts -->
+  <script src="navbar.js"></script>
 
   <script>
+    // ✅ Cargar el navbar externo
     fetch("navbar.html")
       .then(res => res.text())
       .then(html => {
         document.getElementById("navbar-container").innerHTML = html;
-        inicializarNavbar();
-      });
+        inicializarNavbar(); 
+      })
+      .catch(err => console.error("Error cargando navbar:", err));
 
-    async function inicializarNavbar() {
+    // ✅ Cargar productos desde el servidor
+    async function cargarProductos() {
       try {
-        const res = await fetch('/getUser');
-        const user = await res.json();
-        const account = document.getElementById('navbar-account');
-        const text = document.getElementById('account-text');
+        const res = await fetch('/productos/lacteos');
+        const productos = await res.json();
+        const cont = document.getElementById('productos-container');
 
-        if (!user.username) {
-          text.innerHTML = `<span>¡Hola! Inicia sesión</span><br><strong>Mi cuenta</strong>`;
-          account.onclick = () => window.location.href = '/index.html';
-        } else {
-          text.innerHTML = `<span>Bienvenido</span><br><strong>${user.username}</strong>`;
-          account.onclick = async () => {
-            if (confirm("¿Deseas cerrar sesión?")) {
-              await fetch('/logout');
-              window.location.href = '/index.html';
-            }
-          };
-        }
+        cont.innerHTML = productos.map(p => `
+          <div class="producto-card">
+            <img src="${p.image_url}" alt="${p.name}" class="producto-img">
+            <div class="producto-info">
+              <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
+              <h3>${p.name}</h3>
+              <button class="btn-agregar"
+                data-nombre="${p.name}"
+                data-precio="${p.price}"
+                data-imagen="${p.image_url}">
+                Agregar 🛒
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.btn-agregar').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const producto = {
+              name: btn.dataset.nombre,
+              price: parseFloat(btn.dataset.precio),
+              image_url: btn.dataset.imagen
+            };
+            agregarAlCarrito(producto);
+          });
+        });
       } catch (err) {
-        console.error('Error navbar:', err);
+        console.error('Error cargando productos:', err);
       }
     }
 
-    async function cargarProductos() {
-      const res = await fetch('/productos/lacteos');
-      const productos = await res.json();
-      const cont = document.getElementById('productos-container');
-      cont.innerHTML = productos.map(p => `
-        <div class="producto-card">
-          <img src="${p.image_url}" alt="${p.name}" class="producto-img">
-          <div class="producto-info">
-            <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
-            <h3>${p.name}</h3>
-            <button class="btn-agregar">Agregar 🛒</button>
-          </div>
-        </div>`).join('');
+    // ✅ Agregar producto al carrito
+    function agregarAlCarrito(producto) {
+      const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+      carrito.push(producto);
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+
+      const contador = document.getElementById('cart-count');
+      if (contador) contador.textContent = carrito.length > 0 ? carrito.length : '';
+
+      alert(`${producto.name} agregado al carrito 🛒`);
     }
+
     cargarProductos();
   </script>
 </body>
 </html>
-

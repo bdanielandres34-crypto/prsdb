@@ -3,40 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Categorías del Super</title>
+
+  <!-- 🔹 Estilos -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="super.css">
+
+  <!-- 🔹 Iconos (versión moderna de Font Awesome 6) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- 🔵 NAVBAR -->
-  <header class="navbar">
-    <div class="navbar-logo">
-      <img src="img/logo.png" alt="Logo Super" />
-    </div>
-
-    <div class="navbar-search">
-      <input type="text" placeholder="Encuentra lo que necesitas" />
-      <button><i class="fas fa-search"></i></button>
-    </div>
-
-    <div class="navbar-account" id="navbar-account">
-      <div class="account-icon">
-        <i class="fas fa-user"></i>
-      </div>
-      <div class="account-text" id="account-text">
-        <span>¡Hola! Inicia sesión</span><br>
-        <strong>Mi cuenta</strong>
-      </div>
-    </div>
-
-    <div class="navbar-cart">
-      <i class="fas fa-shopping-cart"></i>
-      <span>Carrito</span>
-    </div>
-  </header>
+  <!-- 🔹 Contenedor del Navbar -->
+  <div id="navbar-container"></div>
 
   <!-- 🛒 SECCIÓN PRINCIPAL -->
   <section class="categories-section">
-    <h2>QUE QUIERES COMPRAR HOY</h2>
+    <h2>¿Qué quieres comprar hoy?</h2>
 
     <div class="categories-container">
       <a href="lacteos.html" class="category-card">
@@ -66,44 +47,18 @@
     </div>
   </section>
 
-  <!-- 🧩 Scripts -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- 🔹 Scripts -->
+  <script src="navbar.js"></script>
+
   <script>
-    // ✅ Detectar sesión activa y actualizar navbar
-    async function cargarUsuario() {
-      try {
-        const res = await fetch('/getUser');
-        const user = await res.json();
-
-        const account = document.getElementById('navbar-account');
-        const text = document.getElementById('account-text');
-
-        if (!user.username) {
-          // 🔸 Usuario no logueado
-          text.innerHTML = `
-            <span>¡Hola! Inicia sesión</span><br>
-            <strong>Mi cuenta</strong>
-          `;
-          account.onclick = () => window.location.href = '/index.html';
-        } else {
-          // 🔹 Usuario logueado
-          text.innerHTML = `
-            <span>Bienvenido</span><br>
-            <strong>${user.username}</strong>
-          `;
-          account.onclick = async () => {
-            if (confirm('¿Deseas cerrar sesión?')) {
-              await fetch('/logout');
-              window.location.href = '/index.html';
-            }
-          };
-        }
-      } catch (error) {
-        console.error('Error verificando sesión:', error);
-      }
-    }
-
-    cargarUsuario();
+    // ✅ Cargar el navbar externo
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar-container").innerHTML = html;
+        inicializarNavbar(); // 👈 activa usuario + carrito
+      })
+      .catch(err => console.error("Error cargando navbar:", err));
   </script>
 </body>
 </html>

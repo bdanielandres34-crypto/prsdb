@@ -3,40 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <title>🥩 Carnes Frías</title>
+
+  <!-- 🔹 Estilos -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="productos.css">
+
+  <!-- 🔹 Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <!-- 🔹 Contenedor del Navbar -->
   <div id="navbar-container"></div>
+
+  <!-- 🔹 Contenido principal -->
   <main>
-    <header><h1>🥩 Carnes Frías</h1></header>
+    <header class="titulo-lacteos">
+      <h1>🥩 Carnes Frías</h1>
+    </header>
+
     <section class="productos-container" id="productos-container"></section>
   </main>
 
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <script>
-    fetch("navbar.html").then(r=>r.text()).then(h=>{document.getElementById("navbar-container").innerHTML=h;inicializarNavbar();});
+  <!-- 🔹 Script Navbar -->
+  <script src="navbar.js"></script>
 
-    async function inicializarNavbar(){
-      const r=await fetch('/getUser');const u=await r.json();
-      const a=document.getElementById('navbar-account');const t=document.getElementById('account-text');
-      if(!u.username){t.innerHTML=`<span>¡Hola! Inicia sesión</span><br><strong>Mi cuenta</strong>`;a.onclick=()=>location.href='/index.html';}
-      else{t.innerHTML=`<span>Bienvenido</span><br><strong>${u.username}</strong>`;a.onclick=async()=>{if(confirm("¿Deseas cerrar sesión?")){await fetch('/logout');location.href='/index.html';}};}
+  <script>
+    // ✅ Cargar el navbar externo
+    fetch("navbar.html")
+      .then(r => r.text())
+      .then(h => {
+        document.getElementById("navbar-container").innerHTML = h;
+        inicializarNavbar(); 
+      })
+      .catch(err => console.error("Error cargando navbar:", err));
+
+    // ✅ Cargar productos
+    async function cargarProductos() {
+      try {
+        const r = await fetch('/productos/carnes_frias');
+        const productos = await r.json();
+        const cont = document.getElementById('productos-container');
+
+        cont.innerHTML = productos.map(p => `
+          <div class="producto-card">
+            <img src="${p.image_url}" alt="${p.name}" class="producto-img">
+            <div class="producto-info">
+              <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
+              <h3>${p.name}</h3>
+              <button class="btn-agregar"
+                data-nombre="${p.name}"
+                data-precio="${p.price}"
+                data-imagen="${p.image_url}">
+                Agregar 🛒
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.btn-agregar').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const producto = {
+              name: btn.dataset.nombre,
+              price: parseFloat(btn.dataset.precio),
+              image_url: btn.dataset.imagen
+            };
+            agregarAlCarrito(producto);
+          });
+        });
+      } catch (err) {
+        console.error('Error cargando productos:', err);
+      }
     }
 
-    async function cargarProductos(){
-      const r=await fetch('/productos/carnes_frias');const p=await r.json();
-      document.getElementById('productos-container').innerHTML=p.map(x=>`
-      <div class="producto-card">
-        <img src="${x.image_url}" alt="${x.name}" class="producto-img">
-        <div class="producto-info">
-          <p class="precio">$${parseFloat(x.price).toLocaleString()}</p>
-          <h3>${x.name}</h3>
-          <button class="btn-agregar">Agregar 🛒</button>
-        </div>
-      </div>`).join('');
-    }cargarProductos();
+    // ✅ Agregar al carrito
+    function agregarAlCarrito(producto) {
+      const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+      carrito.push(producto);
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+
+      const contador = document.getElementById('cart-count');
+      if (contador) contador.textContent = carrito.length > 0 ? carrito.length : '';
+
+      alert(`${producto.name} agregado al carrito 🛒`);
+    }
+
+    cargarProductos();
   </script>
 </body>
 </html>
-

@@ -5,12 +5,12 @@
 
   <div class="navbar-search">
     <input type="text" placeholder="Encuentra lo que necesitas" />
-    <button><i class="fas fa-search"></i></button>
+    <button><i class="fa-solid fa-magnifying-glass"></i></button>
   </div>
 
   <div class="navbar-account" id="navbar-account">
     <div class="account-icon">
-      <i class="fas fa-user"></i>
+      <i class="fa-solid fa-user"></i>
     </div>
     <div class="account-text" id="account-text">
       <span>¡Hola! Inicia sesión</span><br>
@@ -18,52 +18,8 @@
     </div>
   </div>
 
-  <div class="navbar-cart" id="navbar-cart" title="Ver carrito">
-    <i class="fas fa-shopping-cart"></i>
+  <div class="navbar-cart" id="navbar-cart">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span id="cart-count" class="cart-count"></span>
   </div>
 </header>
-
-<!-- FontAwesome -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-<script>
-  // 🔹 Verificar usuario y actualizar cuenta
-  async function cargarUsuario() {
-    try {
-      const res = await fetch('/getUser');
-      const user = await res.json();
-
-      const account = document.getElementById('navbar-account');
-      const text = document.getElementById('account-text');
-
-      if (!user.username) {
-        text.innerHTML = `
-          <span>¡Hola! Inicia sesión</span><br>
-          <strong>Mi cuenta</strong>
-        `;
-        account.onclick = () => window.location.href = '/index.html';
-      } else {
-        text.innerHTML = `
-          <span>Bienvenido</span><br>
-          <strong>${user.username}</strong>
-        `;
-        account.onclick = async () => {
-          if (confirm('¿Deseas cerrar sesión?')) {
-            await fetch('/logout');
-            localStorage.removeItem('carrito');
-            window.location.href = '/index.html';
-          }
-        };
-      }
-    } catch (err) {
-      console.error('Error al verificar sesión:', err);
-    }
-  }
-
-  cargarUsuario();
-
-  // 🔹 Click en carrito
-  document.getElementById('navbar-cart').addEventListener('click', () => {
-    window.location.href = '/carrito.html';
-  });
-</script>
