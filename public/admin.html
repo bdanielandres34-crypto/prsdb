@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <header>
+    <h1>🛒 Panel de Administración</h1>
+    <button id="logoutBtn">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <section id="agregar">
+      <h2>Agregar producto</h2>
+      <form id="addProductForm" action="/add-product" method="POST">
+        <input type="text" name="name" placeholder="Nombre del producto" required>
+        <input type="number" name="price" placeholder="Precio" required>
+        <input type="text" name="image_url" placeholder="URL de la imagen">
+        <select name="category" required>
+          <option value="">Seleccionar categoría</option>
+          <option value="lacteos">Lácteos</option>
+          <option value="despensa">Despensa</option>
+          <option value="aseo_personal">Aseo Personal</option>
+          <option value="aseo_hogar">Aseo Hogar</option>
+          <option value="carnes_frias">Carnes Frías</option>
+        </select>
+        <button type="submit">Agregar</button>
+      </form>
+    </section>
+
+    <section id="productos">
+      <h2>Productos actuales</h2>
+      <div id="listaProductos"></div>
+    </section>
+  </main>
+
+  <script>
+    // Cargar productos desde el servidor
+    async function cargarProductos() {
+      const res = await fetch('/products');
+      const productos = await res.json();
+      const lista = document.getElementById('listaProductos');
+      lista.innerHTML = '';
+
+      if (productos.length === 0) {
+        lista.innerHTML = '<p>No hay productos registrados.</p>';
+        return;
+      }
+
+      productos.forEach(p => {
+        const item = document.createElement('div');
+        item.classList.add('producto');
+
+        item.innerHTML = `
+          <img src="${p.image_url || 'https://via.placeholder.com/100'}" alt="${p.name}">
+          <div>
+            <h3>${p.name}</h3>
+            <p>💲 ${p.price}</p>
+            <p><b>Categoría:</b> ${p.category}</p>
+          </div>
+          <form action="/delete-product" method="POST" onsubmit="return confirm('¿Eliminar este producto?')">
+            <input type="hidden" name="id" value="${p.id}">
+            <button type="submit" class="eliminar">🗑 Eliminar</button>
+          </form>
+        `;
+
+        lista.appendChild(item);
+      });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      window.location.href = '/logout';
+    });
+
+    cargarProductos();
+  </script>
+</body>
+</html>

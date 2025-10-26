@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lácteos</title>
+
+  <!-- 🔗 Enlaces de estilos -->
+  <link rel="stylesheet" href="navbar.css">  <!-- Barra superior -->
+  <link rel="stylesheet" href="productos.css"> <!-- Tus estilos de productos -->
+</head>
+<body>
+
+  <!-- 🔵 NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-logo">
+      <img src="img/logo.png" alt="Logo Super" />
+    </div>
+
+    <div class="navbar-search">
+      <input type="text" placeholder="Encuentra lo que necesitas" />
+      <button><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="navbar-account">
+      <div class="account-icon">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="account-text">
+        <span>¡Hola! Inicia sesión</span><br>
+        <strong>Mi cuenta</strong>
+      </div>
+    </div>
+
+    <div class="navbar-cart">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Carrito</span>
+    </div>
+  </header>
+
+  <!-- 🧀 CONTENIDO DE LÁCTEOS -->
+  <main>
+    <header class="titulo-lacteos">
+      <h1>🧀 Productos Lácteos</h1>
+    </header>
+
+    <section class="productos-container" id="productos-container">
+      <!-- Aquí se insertarán los productos automáticamente -->
+    </section>
+  </main>
+
+  <!-- 🧩 Scripts -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <script>
+    async function cargarProductos() {
+      try {
+        const res = await fetch('/productos/lacteos');
+        const productos = await res.json();
+
+        const contenedor = document.getElementById('productos-container');
+        contenedor.innerHTML = '';
+
+        productos.forEach(p => {
+          const card = document.createElement('div');
+          card.classList.add('producto-card');
+          card.innerHTML = `
+            <img src="${p.image_url}" alt="${p.name}" class="producto-img">
+            <div class="producto-info">
+              <p class="precio">$${parseFloat(p.price).toLocaleString()}</p>
+              <h3 class="nombre">${p.name}</h3>
+              <button class="btn-agregar">Agregar 🛒</button>
+            </div>
+          `;
+          contenedor.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Error cargando productos:', error);
+      }
+    }
+
+    cargarProductos();
+  </script>
+
+</body>
+</html>
