@@ -44,7 +44,7 @@ async function inicializarNavbar() {
   }
 }
 
-// 🔍 Búsqueda global
+// 🔍 Inicializar búsqueda
 function inicializarBusqueda() {
   const input = document.getElementById('search-input');
   const boton = document.getElementById('search-btn');
@@ -52,56 +52,71 @@ function inicializarBusqueda() {
   if (!input) return;
 
   const ejecutarBusqueda = () => {
-    const texto = input.value.trim().toLowerCase();
-    if (typeof filtrarProductosPorBusqueda === 'function') {
-      filtrarProductosPorBusqueda(texto);
-    }
+    const texto = input.value.trim();
+    filtrarProductosPorBusqueda(texto);
   };
 
   input.addEventListener('input', ejecutarBusqueda);
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') ejecutarBusqueda();
+  });
   boton.addEventListener('click', ejecutarBusqueda);
 }
 
-document.addEventListener('DOMContentLoaded', inicializarNavbar);
-// 🔍 --- Funcionalidad de la barra de búsqueda ---
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('search-input');
-  const searchBtn = document.getElementById('search-btn');
+// 🔍 Filtrado de productos y redirección a categoría
+async function filtrarProductosPorBusqueda(texto) {
+  if (!texto) return;
 
-  // Si no existe (por ejemplo, en carrito.html), salir
-  if (!searchInput || !searchBtn) return;
+  try {
+    const res = await fetch('/productos/todos'); // Todos los productos
+    const productos = await res.json();
 
-  searchBtn.addEventListener('click', realizarBusqueda);
-  searchInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter') realizarBusqueda();
-  });
+    const resultados = productos.filter(p =>
+      p.name.toLowerCase().includes(texto.toLowerCase())
+    );
 
-  async function realizarBusqueda() {
-    const termino = searchInput.value.trim().toLowerCase();
-    if (!termino) {
-      alert("Por favor escribe algo para buscar 🔍");
+    const contenedor = document.getElementById('resultados-temporales');
+    if (contenedor) contenedor.innerHTML = '';
+
+    if (resultados.length === 0) {
+      if (contenedor) {
+        contenedor.innerHTML = '<p style="padding:10px;">No se encontraron productos.</p>';
+        contenedor.style.display = 'block';
+      } else {
+        alert("No se encontraron productos.");
+      }
       return;
     }
 
-    try {
-      // 🔹 Buscar en todos los productos
-      const res = await fetch('/productos/todos'); // backend debe devolver todos
-      const productos = await res.json();
+    // Mostrar resultados en dropdown si existe
+    if (contenedor) {
+      resultados.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('producto-temporal');
+        div.innerHTML = `
+          <img src="${p.image_url}" alt="${p.name}">
+          <div>
+            <strong>${p.name}</strong>
+            <p>${p.category}</p>
+            <span>$${p.price.toLocaleString()}</span>
+          </div>
+        `;
 
-      // 🔹 Filtrar
-      const resultados = productos.filter(p => 
-        p.name.toLowerCase().includes(termino)
-      );
+        // ✅ Al hacer clic: guardar producto y redirigir a categoría
+        div.addEventListener('click', () => {
+          localStorage.setItem('productoBusqueda', JSON.stringify(p));
+          window.location.href = `/${p.category}.html`;
+        });
 
-      // 🔹 Guardar resultados en localStorage y redirigir
-      localStorage.setItem('resultadosBusqueda', JSON.stringify(resultados));
-      localStorage.setItem('terminoBusqueda', termino);
-
-      // Ir a una página de resultados (por ejemplo resultados.html)
-      window.location.href = '/resultados.html';
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      alert("Ocurrió un error buscando los productos.");
+        contenedor.appendChild(div);
+      });
+      contenedor.style.display = 'block';
     }
+
+  } catch (err) {
+    console.error('Error buscando producto:', err);
   }
-});
+}
+
+document.addEventListener('DOMContentLoaded', inicializarNavbar);
+

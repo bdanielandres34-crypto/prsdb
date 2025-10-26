@@ -3,9 +3,13 @@
     <img src="img/logo.png" alt="Logo Super" />
   </div>
 
-  <div class="navbar-search">
-    <input id="search-input" type="text" placeholder="Encuentra lo que necesitas" />
-    <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+  <div class="navbar-search-container" style="position: relative;">
+    <div class="navbar-search">
+      <input id="search-input" type="text" placeholder="Encuentra lo que necesitas" />
+      <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <!-- Contenedor de resultados de búsqueda -->
+    <div id="resultados-temporales"></div>
   </div>
 
   <div class="navbar-account" id="navbar-account">

@@ -1,31 +1,44 @@
-/* 🔹 Estilo general */
+/* ============================= */
+/* 🔹 ESTILO GENERAL DE LA NAVBAR */
+/* ============================= */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #0d8ef8; /* 🔵 azul claro tipo original */
+  background-color: #0d8ef8;
   padding: 10px 25px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  position: relative;
 }
 
-/* 🔹 Logo */
+/* ============================= */
+/* 🔹 LOGO */
+/* ============================= */
 .navbar-logo img {
   height: 55px;
-  border: 2px solid white; /* borde blanco */
+  border: 2px solid white;
   border-radius: 10px;
   background-color: white;
   padding: 3px;
   cursor: pointer;
 }
 
-/* 🔹 Barra de búsqueda */
+/* ============================= */
+/* 🔹 BARRA DE BÚSQUEDA */
+/* ============================= */
+.navbar-search-container {
+  position: relative;
+  width: 55%;
+  display: flex;
+}
+
 .navbar-search {
+  flex: 1;
   display: flex;
   align-items: center;
   background: white;
   border-radius: 25px;
   overflow: hidden;
-  width: 55%;
 }
 
 .navbar-search input {
@@ -50,12 +63,69 @@
   background-color: #007add;
 }
 
-/* 🔹 Usuario */
+/* ============================= */
+/* 🔹 DROPDOWN DE RESULTADOS */
+/* ============================= */
+#resultados-temporales {
+  position: absolute;
+  top: 100%; /* justo debajo del input */
+  left: 0;
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: none;
+}
+
+/* Cada producto dentro del dropdown */
+.producto-temporal {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.producto-temporal:hover {
+  background-color: #f0f0f0;
+}
+
+.producto-temporal img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.producto-temporal div {
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-temporal strong {
+  font-size: 14px;
+  color: #333;
+}
+
+.producto-temporal p, .producto-temporal span {
+  font-size: 12px;
+  color: #555;
+}
+
+/* ============================= */
+/* 🔹 USUARIO */
+/* ============================= */
 .navbar-account {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #0084ff; /* azul medio */
+  background-color: #0084ff;
   padding: 8px 15px;
   border-radius: 20px;
   cursor: pointer;
@@ -84,7 +154,9 @@
   font-size: 14px;
 }
 
-/* 🔹 Carrito */
+/* ============================= */
+/* 🔹 CARRITO */
+/* ============================= */
 .navbar-cart {
   display: flex;
   align-items: center;
@@ -111,13 +183,11 @@
   font-weight: bold;
 }
 
-.cart-text {
-  margin-left: 4px;
-}
-
-/* Responsive */
+/* ============================= */
+/* 🔹 RESPONSIVE */
+/* ============================= */
 @media (max-width: 800px) {
-  .navbar-search {
+  .navbar-search-container {
     width: 40%;
   }
 
@@ -126,10 +196,6 @@
   }
 
   .account-text {
-    display: none;
-  }
-
-  .cart-text {
     display: none;
   }
 }

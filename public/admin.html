@@ -13,9 +13,10 @@
   </header>
 
   <main>
+    <!-- Agregar producto -->
     <section id="agregar">
       <h2>Agregar producto</h2>
-      <form id="addProductForm" action="/add-product" method="POST">
+      <form id="addProductForm">
         <input type="text" name="name" placeholder="Nombre del producto" required>
         <input type="number" name="price" placeholder="Precio" required>
         <input type="text" name="image_url" placeholder="URL de la imagen">
@@ -31,6 +32,7 @@
       </form>
     </section>
 
+    <!-- Productos actuales -->
     <section id="productos">
       <h2>Productos actuales</h2>
       <div id="listaProductos"></div>
@@ -38,43 +40,102 @@
   </main>
 
   <script>
-    // Cargar productos desde el servidor
-    async function cargarProductos() {
-      const res = await fetch('/products');
-      const productos = await res.json();
-      const lista = document.getElementById('listaProductos');
-      lista.innerHTML = '';
+    const logoutBtn = document.getElementById('logoutBtn');
+    const addForm = document.getElementById('addProductForm');
+    const listaProductos = document.getElementById('listaProductos');
 
-      if (productos.length === 0) {
-        lista.innerHTML = '<p>No hay productos registrados.</p>';
+    // Cerrar sesión
+    logoutBtn.addEventListener('click', () => {
+      window.location.href = '/logout';
+    });
+
+    // Cargar todos los productos
+    async function cargarProductos() {
+      try {
+        const res = await fetch('/productos/todos'); // endpoint correcto
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const productos = await res.json();
+        mostrarProductos(productos);
+      } catch (err) {
+        console.error('Error cargando productos:', err);
+        listaProductos.innerHTML = '<p style="color:red;">No se pudieron cargar los productos. Revisa consola.</p>';
+      }
+    }
+
+    // Mostrar productos
+    function mostrarProductos(productos) {
+      if (!productos || productos.length === 0) {
+        listaProductos.innerHTML = '<p>No hay productos registrados.</p>';
         return;
       }
 
-      productos.forEach(p => {
-        const item = document.createElement('div');
-        item.classList.add('producto');
+      listaProductos.innerHTML = ''; // limpiar contenedor
 
-        item.innerHTML = `
+      productos.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('producto');
+
+        div.innerHTML = `
           <img src="${p.image_url || 'https://via.placeholder.com/100'}" alt="${p.name}">
           <div>
             <h3>${p.name}</h3>
             <p>💲 ${p.price}</p>
             <p><b>Categoría:</b> ${p.category}</p>
           </div>
-          <form action="/delete-product" method="POST" onsubmit="return confirm('¿Eliminar este producto?')">
-            <input type="hidden" name="id" value="${p.id}">
-            <button type="submit" class="eliminar">🗑 Eliminar</button>
-          </form>
+          <button class="eliminar">🗑 Eliminar</button>
         `;
 
-        lista.appendChild(item);
+        // Botón eliminar
+        const btnEliminar = div.querySelector('.eliminar');
+        btnEliminar.addEventListener('click', async () => {
+          if (!confirm(`¿Eliminar producto "${p.name}"?`)) return;
+          try {
+            const res = await fetch('/delete-product', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: p.id })
+            });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            alert(`Producto "${p.name}" eliminado ✅`);
+            cargarProductos(); // recargar lista
+          } catch (err) {
+            console.error('Error eliminando producto:', err);
+            alert('Error eliminando producto. Revisa consola.');
+          }
+        });
+
+        listaProductos.appendChild(div);
       });
     }
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      window.location.href = '/logout';
+    // Agregar producto
+    addForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(addForm);
+      const producto = {
+        name: formData.get('name'),
+        price: parseFloat(formData.get('price')),
+        image_url: formData.get('image_url'),
+        category: formData.get('category')
+      };
+
+      try {
+        const res = await fetch('/add-product', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(producto)
+        });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        alert(`Producto "${producto.name}" agregado ✅`);
+        addForm.reset();
+        cargarProductos(); // recargar lista
+      } catch (err) {
+        console.error('Error agregando producto:', err);
+        alert('Error agregando producto. Revisa consola.');
+      }
     });
 
+    // Iniciar
     cargarProductos();
   </script>
 </body>
