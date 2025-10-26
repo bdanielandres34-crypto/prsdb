@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🛒 Mi Carrito</title>
+  <link rel="stylesheet" href="carrito.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <main class="carrito-main">
+    <h1>🛍️ Mi Carrito</h1>
+
+    <section id="carrito-contenedor" class="carrito-contenedor"></section>
+
+    <div class="carrito-resumen">
+      <p>Total: <strong id="carrito-total">$0</strong></p>
+      <div class="carrito-botones">
+        <button id="btn-vaciar" class="btn-vaciar">Vaciar Carrito</button>
+        <button id="btn-comprar" class="btn-comprar">Proceder al Pago</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 🔹 Modal de Pago -->
+  <div id="modal-pago" class="modal oculto">
+    <div class="modal-contenido">
+      <h2>💳 Selecciona tu método de pago</h2>
+      <p>Total a pagar: <strong id="pago-total"></strong></p>
+
+      <div class="metodos-pago">
+        <button class="pago-btn" data-metodo="Nequi"><img src="img/nequi.png" alt="">Nequi</button>
+        <button class="pago-btn" data-metodo="Daviplata"><img src="img/daviplata.png" alt="">Daviplata</button>
+        <button class="pago-btn" data-metodo="PSE"><img src="img/pse.png" alt="">PSE</button>
+        <button class="pago-btn" data-metodo="Tarjeta"><i class="fas fa-credit-card"></i> Tarjeta</button>
+        <button class="pago-btn" data-metodo="Efectivo"><i class="fas fa-money-bill-wave"></i> Efectivo</button>
+      </div>
+
+      <button id="cerrar-modal" class="btn-cerrar">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ✅ Script externo -->
+  <script src="carrito.js"></script>
+</body>
+</html>
