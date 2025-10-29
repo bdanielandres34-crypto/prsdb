@@ -1,6 +1,6 @@
 let productos = [];
 
-// ✅ Cargar productos según la categoría del body
+// ✅ Cargar productos según la categoría
 async function cargarProductosCategoria() {
   const categoria = document.body.dataset.categoria;
   if (!categoria) return;
@@ -10,25 +10,21 @@ async function cargarProductosCategoria() {
     productos = await res.json();
     mostrarProductos(productos);
   } catch (err) {
-    console.error('Error cargando productos:', err);
+    console.error("Error cargando productos:", err);
   }
 }
 
 // ✅ Mostrar productos en la página
 function mostrarProductos(lista) {
-  const cont = document.getElementById('productos-container');
+  const cont = document.getElementById("productos-container");
   if (!cont) return;
 
-  // Revisar si viene un producto buscado desde navbar
-  const buscado = JSON.parse(localStorage.getItem('productoBusqueda') || 'null');
+  const buscado = JSON.parse(localStorage.getItem("productoBusqueda") || "null");
   let productosOrdenados = lista;
 
   if (buscado && buscado.category === document.body.dataset.categoria) {
-    productosOrdenados = [
-      buscado,
-      ...lista.filter(p => p.id !== buscado.id)
-    ];
-    localStorage.removeItem('productoBusqueda');
+    productosOrdenados = [buscado, ...lista.filter(p => p.id !== buscado.id)];
+    localStorage.removeItem("productoBusqueda");
   }
 
   if (!productosOrdenados.length) {
@@ -50,26 +46,34 @@ function mostrarProductos(lista) {
         </button>
       </div>
     </div>
-  `).join('');
+  `).join("");
 
-  // Activar botones de agregar al carrito
-  document.querySelectorAll('.btn-agregar').forEach(btn => {
-    btn.addEventListener('click', () => {
+  document.querySelectorAll(".btn-agregar").forEach(btn => {
+    btn.addEventListener("click", () => {
       const producto = {
         name: btn.dataset.nombre,
         price: parseFloat(btn.dataset.precio),
-        image_url: btn.dataset.imagen
+        image_url: btn.dataset.imagen,
+        cantidad: 1
       };
-      const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-      carrito.push(producto);
-      localStorage.setItem('carrito', JSON.stringify(carrito));
 
-      const contador = document.getElementById('cart-count');
-      if (contador) contador.textContent = carrito.length > 0 ? carrito.length : '';
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      const index = carrito.findIndex(p => p.name === producto.name);
+      if (index !== -1) carrito[index].cantidad += 1;
+      else carrito.push(producto);
+
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+
+      const contador = document.getElementById("cart-count");
+      if (contador) {
+        const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+        contador.textContent = totalItems > 0 ? totalItems : "";
+      }
+
       alert(`${producto.name} agregado al carrito 🛒`);
     });
   });
 }
 
-// 🚀 Iniciar carga de productos cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', cargarProductosCategoria);
+// 🚀 Iniciar carga de productos
+document.addEventListener("DOMContentLoaded", cargarProductosCategoria);

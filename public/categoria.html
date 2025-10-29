@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <title>Productos</title>
 
+  <!-- 🔗 Estilos -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="productos.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- Navbar -->
+  <!-- 🧭 Navbar -->
   <div id="navbar-container"></div>
 
-  <!-- Contenedor resultados búsqueda dropdown -->
+  <!-- 🔍 Contenedor resultados búsqueda -->
   <div id="resultados-temporales" class="resultados-temporales"></div>
 
   <main>
@@ -28,25 +29,31 @@
   </main>
 
   <script src="navbar.js"></script>
-  <script>
-    // 🔹 Configurar la categoría actual
-    const categoriaActual = document.body.dataset.categoria; 
-    // Por ejemplo: 'lacteos', 'despensa', 'aseo_hogar', 'aseo_personal', 'carnes_frias'
 
-    document.getElementById('titulo-categoria').querySelector('h1').textContent = `🛒 Productos de ${categoriaActual.replace('_',' ')}`;
+  <script>
+    // ================================
+    // 🔹 Configurar la categoría actual
+    // ================================
+    const categoriaActual = document.body.dataset.categoria; // ejemplo: "lacteos"
+    document.getElementById('titulo-categoria').querySelector('h1').textContent =
+      `🛒 Productos de ${categoriaActual.replace('_', ' ')}`;
 
     let productos = [];
 
-    // Cargar Navbar
+    // ================================
+    // 🔹 Cargar Navbar
+    // ================================
     fetch("navbar.html")
       .then(res => res.text())
       .then(html => {
         document.getElementById("navbar-container").innerHTML = html;
-        inicializarNavbar();
-        inicializarBusqueda();
+        if (typeof inicializarNavbar === "function") inicializarNavbar();
+        if (typeof inicializarBusqueda === "function") inicializarBusqueda();
       });
 
-    // Cargar productos de la categoría
+    // ================================
+    // 🔹 Cargar productos desde el servidor
+    // ================================
     async function cargarProductos() {
       try {
         const res = await fetch(`/productos/${categoriaActual}`);
@@ -57,16 +64,16 @@
       }
     }
 
+    // ================================
+    // 🔹 Mostrar productos
+    // ================================
     function mostrarProductos(lista) {
       const cont = document.getElementById('productos-container');
       const buscado = JSON.parse(localStorage.getItem('productoBusqueda') || 'null');
 
       let productosOrdenados = lista;
       if (buscado && buscado.category === categoriaActual) {
-        productosOrdenados = [
-          buscado,
-          ...lista.filter(p => p.id !== buscado.id)
-        ];
+        productosOrdenados = [buscado, ...lista.filter(p => p.id !== buscado.id)];
         localStorage.removeItem('productoBusqueda');
       }
 
@@ -91,7 +98,9 @@
         </div>
       `).join('');
 
-      // Agregar al carrito
+      // ================================
+      // 🔹 Evento: agregar al carrito
+      // ================================
       document.querySelectorAll('.btn-agregar').forEach(btn => {
         btn.addEventListener('click', () => {
           const producto = {
@@ -99,11 +108,26 @@
             price: parseFloat(btn.dataset.precio),
             image_url: btn.dataset.imagen
           };
-          const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-          carrito.push(producto);
+
+          let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+          // Buscar si ya existe el producto en el carrito
+          const existente = carrito.find(p => p.name === producto.name);
+          if (existente) {
+            existente.cantidad = (existente.cantidad || 1) + 1;
+          } else {
+            producto.cantidad = 1;
+            carrito.push(producto);
+          }
+
+          // Guardar carrito actualizado
           localStorage.setItem('carrito', JSON.stringify(carrito));
+
+          // Actualizar contador del carrito si existe
           const contador = document.getElementById('cart-count');
-          if (contador) contador.textContent = carrito.length > 0 ? carrito.length : '';
+          if (contador) contador.textContent = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
+
+          // Confirmación
           alert(`${producto.name} agregado al carrito 🛒`);
         });
       });

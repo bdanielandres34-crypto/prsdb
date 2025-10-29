@@ -1,0 +1,52 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  color: #333;
+  margin: 0;
+  padding: 2rem;
+}
+
+.recibo-container {
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.producto-recibo {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 0.8rem 0;
+}
+
+.img-recibo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+h1, h2 {
+  color: #0077cc;
+}
+
+.btn-volver {
+  background: #0077cc;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.btn-volver:hover {
+  background: #005fa3;
+}
