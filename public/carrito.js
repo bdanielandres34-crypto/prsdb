@@ -102,7 +102,7 @@ function cargarMetodosPago() {
   const select = document.getElementById("metodo-pago");
   if (!select) return;
 
-  const metodos = ["Efectivo", "Tarjeta de crédito", "Nequi", "Daviplata"];
+  const metodos = [ "Tarjeta de crédito", "Nequi", "Daviplata"];
   select.innerHTML =
     `<option value="">Seleccionar...</option>` +
     metodos.map(m => `<option value="${m}">${m}</option>`).join("");
@@ -117,11 +117,10 @@ function cargarMetodosPago() {
     }
 
     let imgSrc = "";
-    if (metodo === "Nequi") imgSrc = "https://seeklogo.com/images/N/nequi-logo-22B67C31E6-seeklogo.com.png";
-    else if (metodo === "Daviplata") imgSrc = "https://seeklogo.com/images/D/daviplata-logo-22A78D3D84-seeklogo.com.png";
+    if (metodo === "Nequi") imgSrc = "https://images.seeklogo.com/logo-png/40/1/nequi-logo-png_seeklogo-404357.png";
+    else if (metodo === "Daviplata") imgSrc = "https://www.stickersremotos.com/svg/di/34vbg1u8qwaz5e0.webp";
     else if (metodo === "Tarjeta de crédito") imgSrc = "https://cdn-icons-png.flaticon.com/512/196/196561.png";
-    else if (metodo === "Efectivo") imgSrc = "https://cdn-icons-png.flaticon.com/512/633/633611.png";
-
+   
     logo.src = imgSrc;
     logo.classList.remove("oculto");
   });

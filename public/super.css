@@ -2,33 +2,44 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #fff;
+  background: url("img/471c0269ab3c533390fb4e3e14934986.jpg") no-repeat center center fixed;
+  background-size: cover;
   color: #222;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+}
+
+/* 🔹 Contenedor principal */
+.categories-section {
+  padding: 60px 20px;
+  background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin: 80px auto; /* 🔹 separa del navbar */
+  max-width: 1100px;
+  width: 90%;
   text-align: center;
 }
 
-.categories-section {
-  padding: 40px 20px;
-}
-
+/* 🔹 Título */
 .categories-section h2 {
-  font-size: 24px;
+  font-size: 26px;
   margin-bottom: 40px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  color: #0077cc;
 }
 
+/* 🔹 Contenedor de categorías */
 .categories-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
-  max-width: 1000px;
-  margin: 0 auto;
 }
 
+/* 🔹 Tarjetas */
 .category-card {
   text-decoration: none;
   color: #000;
@@ -66,10 +77,14 @@ body {
   transform: translateY(-5px);
 }
 
-/* Adaptación para pantallas pequeñas */
+/* 🔹 Responsivo */
 @media (max-width: 600px) {
   .categories-container {
     flex-direction: column;
     gap: 25px;
+  }
+
+  .categories-section {
+    margin: 100px 10px;
   }
 }
